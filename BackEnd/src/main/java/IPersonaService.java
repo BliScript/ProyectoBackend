@@ -1,6 +1,3 @@
-
-package com.proyecto.portfolio.Repository;
-
 import com.proyecto.portfolio.Entity.Persona;
 import java.util.List;
 
