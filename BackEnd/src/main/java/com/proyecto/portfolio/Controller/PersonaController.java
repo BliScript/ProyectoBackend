@@ -4,6 +4,7 @@ import com.proyecto.portfolio.Entity.Persona;
 import com.proyecto.portfolio.Interface.IPersonaService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,25 +15,29 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+// p/ problema CORS policy
+@CrossOrigin(origins = "http://localhost:4200")
 public class PersonaController {
-    @Autowired IPersonaService interPersona;
+   // inyeccion de dependencias
+    @Autowired 
+     private IPersonaService interPersona;
     
     
     
-    @GetMapping ("/Personas/traer")
+    @GetMapping ("/personas/traer")
     public List<Persona> getPersonas() {
         
         return interPersona.getPersona();
     }
     
-    @PostMapping ("/Personas/crear")
+    @PostMapping ("/personas/crear")
     public String createPersona(@RequestBody Persona persona) {
         interPersona.savePersona(persona);
         //si se creó correctamente devuelve un string
         return "La persona ha sido creada correctamente";
     }
     
-    @DeleteMapping ("/Personas/borrar/{id}") 
+    @DeleteMapping ("/personas/borrar/{id}") 
     public String deletePersona (@PathVariable Long id) {
     
             interPersona.deletePersona(id);
@@ -41,7 +46,7 @@ public class PersonaController {
     }
     
     // editar info x id
-    @PutMapping ("/Personas/editar/{id}")
+    @PutMapping ("/personas/editar/{id}")
     public Persona editPersona (@PathVariable Long id, 
                                                   @RequestParam ("nombre") String nuevoNombre,
                                                   @RequestParam ("apellido") String nuevoApellido) {
@@ -56,4 +61,10 @@ public class PersonaController {
         return persona;
     }
     
+    //mi info
+    @GetMapping("/personas/traer/info")
+    public Persona findPersona() {
+    return interPersona.findPersona ((long)1);
+    }
 }
+
