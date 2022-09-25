@@ -1,6 +1,8 @@
 package com.proyecto.portfolio.Security.Controller;
 
 import com.proyecto.portfolio.Security.Dto.JwtDto;
+import com.proyecto.portfolio.Security.Dto.LoginUsuario;
+import com.proyecto.portfolio.Security.Dto.NuevoUsuario;
 import com.proyecto.portfolio.Security.Entity.Rol;
 import com.proyecto.portfolio.Security.Entity.Usuario;
 import com.proyecto.portfolio.Security.Enums.RolNombre;
@@ -9,6 +11,7 @@ import com.proyecto.portfolio.Security.Service.UsuarioService;
 import com.proyecto.portfolio.Security.jwt.JwtProvider;
 import java.util.HashSet;
 import java.util.Set;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,26 +50,26 @@ public class AuthController {
 
     @PostMapping("/nuevo")
     public ResponseEntity<?> nuevo(@Valid @RequestBody NuevoUsuario nuevoUsuario, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return new ResponseEntity(new Mensaje("Campos incorrectos o email inválido", HttpStatus.BAD_REQUEST));
-        }
+        if (bindingResult.hasErrors()) 
+            return new ResponseEntity(new Mensaje("Campos incorrectos o email incorrecto"), HttpStatus.BAD_REQUEST);
+        
 
-        if (usuarioService.existsByNombreUsuario(nombreUsuario.getNombreUsuario())) {
+        if (usuarioService.existsByNombreUsuario(nuevoUsuario.getNombreUsuario())) 
             return new ResponseEntity(new Mensaje("Este nombre de usuario ya está en uso"), HttpStatus.BAD_REQUEST);
-        }
+        
 
-        if (usuarioService.existsByEmail(nombreUsuario.getEmail())) {
+        if (usuarioService.existsByEmail(nuevoUsuario.getEmail())) 
             return new ResponseEntity(new Mensaje("Este email ya está en uso"), HttpStatus.BAD_REQUEST);
-        }
+        
 
         Usuario usuario = new Usuario(nuevoUsuario.getNombre(), nuevoUsuario.getNombreUsuario(), nuevoUsuario.getEmail(), passwordEncoder.encode(nuevoUsuario.getPassword()));
 
         Set<Rol> roles = new HashSet<>();
         roles.add(rolService.getByRolNombre(RolNombre.ROLE_USER).get());
 
-        if (nuevoUsuario.getRoles().contains("admin")) {
+        if (nuevoUsuario.getRoles().contains("admin")) 
             roles.add(rolService.getByRolNombre(RolNombre.ROLE_ADMIN).get());
-        }
+        
         usuario.setRoles(roles);
         usuarioService.save(usuario);
 
